@@ -6,7 +6,7 @@
 
 - **Live app:** https://ajaia-docs-mu-tan.vercel.app
 - **Source code:** https://github.com/Marcuschan2004/ajaia-docs (the same code is in this Drive folder)
-- **Walkthrough video:** VIDEO_URL_HERE (also in `VIDEO_URL.txt`)
+- **Walkthrough video:** https://www.loom.com/share/e37a83e6ed3342c98e1917e36ade54d9 (also in `VIDEO_URL.txt`)
 
 ## Test accounts
 
