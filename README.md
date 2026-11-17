@@ -2,7 +2,7 @@
 
 A lightweight collaborative document editor inspired by Google Docs. Users can create, rename, edit, and reopen rich-text documents, import files into new documents, and share documents with other users as editors or viewers.
 
-**Live app:** LIVE_URL_HERE
+**Live app:** https://ajaia-docs-mu-tan.vercel.app
 
 ## Demo accounts
 
