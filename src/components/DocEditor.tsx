@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { EditorContent, useEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import { Extension } from "@tiptap/core";
 import TurndownService from "turndown";
 import { api } from "@/lib/client";
 import Toolbar from "./Toolbar";
@@ -22,6 +23,20 @@ type Doc = {
 type SaveState = "saved" | "dirty" | "saving" | "error";
 
 const AUTOSAVE_MS = 800;
+
+// Every way of starting a new line (Enter, Shift+Enter, Cmd+Enter, or an
+// input method sending "insertLineBreak") makes a new paragraph or list item.
+// Soft line breaks inside one block made headings and list toggles swallow
+// several lines at once, which felt broken.
+const NewLineAsBlock = Extension.create({
+  name: "newLineAsBlock",
+  priority: 1000,
+  addKeyboardShortcuts() {
+    const split = () =>
+      this.editor.commands.first(({ commands }) => [() => commands.splitListItem("listItem"), () => commands.splitBlock()]);
+    return { "Shift-Enter": split, "Mod-Enter": split };
+  },
+});
 
 export default function DocEditor({ id }: { id: string }) {
   const [doc, setDoc] = useState<Doc | null>(null);
@@ -84,12 +99,26 @@ function LoadedEditor({ initial }: { initial: Doc }) {
     }
   }, [initial.id]);
 
+  const editorRef = useRef<ReturnType<typeof useEditor>>(null);
   const editor = useEditor({
-    extensions: [StarterKit.configure({ link: false })],
+    extensions: [StarterKit.configure({ link: false, hardBreak: false }), NewLineAsBlock],
     content: initial.content,
     editable: canEdit,
     immediatelyRender: false,
-    editorProps: { attributes: { class: "prose", "aria-label": "Document body" } },
+    editorProps: {
+      attributes: { class: "prose", "aria-label": "Document body" },
+      handleDOMEvents: {
+        beforeinput: (view, event) => {
+          if ((event as InputEvent).inputType !== "insertLineBreak") return false;
+          event.preventDefault();
+          editorRef.current?.commands.first(({ commands }) => [
+            () => commands.splitListItem("listItem"),
+            () => commands.splitBlock(),
+          ]);
+          return true;
+        },
+      },
+    },
     onUpdate: ({ editor: e }) => {
       latestHtml.current = e.getHTML();
       setSaveState("dirty");
@@ -97,6 +126,8 @@ function LoadedEditor({ initial }: { initial: Doc }) {
       timer.current = setTimeout(flush, AUTOSAVE_MS);
     },
   });
+
+  editorRef.current = editor;
 
   // Save on Ctrl/Cmd+S, warn before leaving with unsaved changes, and
   // fire a last keepalive save when navigating away inside the app.
