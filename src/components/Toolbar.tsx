@@ -24,7 +24,16 @@ export default function Toolbar({ editor }: { editor: Editor }) {
   const chain = () => editor.chain().focus();
 
   return (
-    <div className="toolbar" role="toolbar" aria-label="Formatting">
+    <div
+      className="toolbar"
+      role="toolbar"
+      aria-label="Formatting"
+      // Keep focus (and any pending bold/italic/underline) in the editor when
+      // clicking toolbar buttons. The <select> still needs default behavior.
+      onMouseDown={(e) => {
+        if ((e.target as HTMLElement).closest("button")) e.preventDefault();
+      }}
+    >
       <button title="Undo (Ctrl+Z)" onClick={() => chain().undo().run()} disabled={!s.canUndo}>
         ↶
       </button>
