@@ -1,0 +1,4 @@
+Plain text import
+
+This paragraph came from a .txt file.
+Second line in the same paragraph.
