@@ -19,6 +19,7 @@ I made the product calls first (stack, scope cuts, roles, which file types to su
 ## What I changed or rejected
 
 - **Heading picker:** the first toolbar used a native dropdown for text styles. On Mac Chrome it held focus after picking an option, so headings got stuck and spread to other lines. I replaced it with Normal / H1 / H2 / H3 buttons that never take focus from the editor.
+- **Line breaks:** while recording I noticed Enter sometimes made a soft line break inside the same paragraph, so H1 or List would apply to the whole block. I turned off soft breaks and mapped every new-line input to a new paragraph or list item.
 - **Delete confirmation:** the first version used the browser's `confirm()` popup. I swapped it for an inline "Confirm delete" button since it's a smoother UX and doesn't block automated testing.
 - **403 vs 404:** I had the API return 404 to users without access so it doesn't reveal which document ids exist. Users with access but the wrong role still get a clear 403.
 - **Prop mutation:** the generated title-rename code mutated a React prop to track the saved title. I changed it to a ref.
